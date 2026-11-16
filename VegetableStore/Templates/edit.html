@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Редагування · Овочева крамниця</title>
+    <link rel="stylesheet" href="/css/site.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="logo" href="/">🥕 Овочева крамниця</a>
+            <span class="tagline">CRUD на ASP.NET</span>
+        </div>
+    </header>
+
+    <main class="container container-narrow">
+        <a class="back-link" href="/">← До списку</a>
+
+        {{errors}}
+
+        <section class="card">
+            <h2>Редагування овоча <span class="muted">#{{id}}</span></h2>
+            <form method="post" action="/vegetables/{{id}}/edit" class="form-stack">
+                {{antiforgery}}
+                <label class="field">
+                    <span>Назва</span>
+                    <input name="name" value="{{name}}" required maxlength="50">
+                </label>
+                <label class="field">
+                    <span>Тип</span>
+                    <input name="type" value="{{type}}" required maxlength="30">
+                </label>
+                <label class="field">
+                    <span>Ціна, грн</span>
+                    <input name="price" value="{{price}}" type="number" step="0.01" min="0" required>
+                </label>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Зберегти</button>
+                    <a class="btn btn-secondary" href="/">Скасувати</a>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">Навчальний проєкт · ASP.NET Minimal API</div>
+    </footer>
+</body>
+</html>
