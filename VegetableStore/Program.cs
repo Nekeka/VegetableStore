@@ -30,7 +30,7 @@ public class  Program
 
         var app = builder.Build();
 
-    
+        // працюємо
         app.UseStaticFiles();
 
         
