@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using VegetableStore.Models;
+using VegetableStore.Data;
 using VegetableStore.Rendering;
 
 namespace VegetableStore;
@@ -7,16 +7,7 @@ namespace VegetableStore;
 public class  Program
 {
     // 2.1
-    private static int _nextId = 6;
-
-    private static readonly List<VegetableModel> Vegetables = new()
-    {
-        new(1, "Cucumber", "Vegetable", 3.5m),
-        new(2, "Carrot",   "Crop",      2.50m),
-        new(3, "Potato",   "Vegetable", 1.50m),
-        new(4, "Pumpkin",  "Vegetable", 8m),
-        new(5, "Pea",      "Beans",     1m)
-    };
+    private static readonly InMemoryVegetableRepository Repository = new();
 
     public static void Main(string[] args)
     {
@@ -47,7 +38,7 @@ public class  Program
     
     private static IResult Index(PageRenderer pages)
     {
-        return pages.Index(Vegetables);
+        return pages.Index(Repository.GetAll());
     }
 
 
@@ -57,14 +48,14 @@ public class  Program
         [FromForm] decimal price)
     {
         //2.3
-        Vegetables.Add(new VegetableModel(_nextId++, name, type, price));
+        Repository.Add(name, type, price);
         return Results.Redirect("/");
     }
 
 
     private static IResult EditForm(int id, PageRenderer pages)
     {
-        var vegetable = Vegetables.FirstOrDefault(v => v.Id == id);
+        var vegetable = Repository.GetById(id);
         if (vegetable is null)
             return pages.NotFound($"Овоч з id={id} не знайдено");
 
@@ -79,14 +70,9 @@ public class  Program
         [FromForm] decimal price,
         PageRenderer pages)
     {
-        var vegetable = Vegetables.FirstOrDefault(v => v.Id == id);
-        if (vegetable is null)
-            return pages.NotFound($"Овоч з id={id} не знайдено");
-
         // 2.3
-        vegetable.Name = name;
-        vegetable.Type = type;
-        vegetable.Price = price;
+        if (!Repository.Update(id, name, type, price))
+            return pages.NotFound($"Овоч з id={id} не знайдено");
 
         return Results.Redirect("/");
     }
@@ -94,8 +80,7 @@ public class  Program
 
     private static IResult DeleteVegetable(int id, PageRenderer pages)
     {
-        var removed = Vegetables.RemoveAll(v => v.Id == id);
-        if (removed == 0)
+        if (!Repository.Delete(id))
             return pages.NotFound($"Овоч з id={id} не знайдено");
 
         return Results.Redirect("/");
